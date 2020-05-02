@@ -1,52 +1,69 @@
 from lib.constants import *
 
-def Villager():
+class Villager():
 
-	def __init__(player, alignment=ALIGNMENT_TOWN, ability=ABILITY_NONE):
+	def __init__(self, player, alignment=ALIGNMENT_TOWN, ability=ABILITY_NONE):
 		self._player = player
 		self._alignment = alignment
 		self._ability = ability
 		self._alive = True
-		self.health = 1
+		self.doctor_buff = False
+		self.death_flag = False
 		self.death_votes = 0
 
-	def vote():
+	def __repr__(self):
+		return self._player
+
+	def vote(self):
 		self.death_votes += 1
 
-	def survive():
+	def survive(self):
 		self.death_votes = 0
 
-	def die():
+	def hit(self):
+		self.death_flag = True
+
+	def die(self):
 		self._alive = False
 
-	def get_ability():
+	def get_ability(self):
 		return self._ability
 
-	def has_ability():
+	def has_ability(self):
 		return self._ability != ABILITY_NONE
 
-	def is_alive():
+	def is_alive(self):
 		return self._alive
 
-	def is_mafia_aligned():
-		return self._alignment = ALIGNMENT_MAFIA
+	def is_mafia_aligned(self):
+		return self._alignment == ALIGNMENT_MAFIA
 
-	def is_town_aligned():
-		return self._alignment = ALIGNMENT_TOWN
+	def is_town_aligned(self):
+		return self._alignment == ALIGNMENT_TOWN
 
-def Mafia(Villager):
+	def save(self):
+		self.doctor_buff = True
 
-	def __init__(player):
+	def should_die(self):
+		return self.death_flag and not self.doctor_buff
+
+	def reset_flags(self):
+		self.doctor_buff = False
+		self.death_flag = False
+
+class Mafia(Villager):
+
+	def __init__(self, player):
 		super().__init__(player=player, alignment=ALIGNMENT_MAFIA, ability=ABILITY_MAFIA)
 
 
-def Doctor(Villager):
+class Doctor(Villager):
 
-	def __init__(player):
+	def __init__(self, player):
 		super().__init__(player=player, alignment=ALIGNMENT_TOWN, ability=ABILITY_DOCTOR)
 
 
-def Cop(Villager):
+class Cop(Villager):
 
-	def __init__(player):
+	def __init__(self, player):
 		super().__init__(player=player, alignment=ALIGNMENT_TOWN, ability=ABILITY_COP)
