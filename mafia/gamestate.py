@@ -97,8 +97,13 @@ class GameState():
             players_to_prompt = [p for p in self.ability_players if p.is_alive()]
             votes_required = len(players_to_prompt)
         timer = Timer(seconds, self.callback)
+        tasks = []
         for player in players_to_prompt:
-            await self.prompt_player(player)
+            task = asyncio.ensure_future(self.prompt_player(player))
+            tasks.append(task)
+        tasks = asyncio.gather(*tasks)
+        await tasks
+
         while self.total_votes < len(players_to_prompt):
             if self.timer_completed:
                 break
